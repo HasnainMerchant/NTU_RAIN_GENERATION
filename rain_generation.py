@@ -3,6 +3,8 @@ import glob
 import cv2 as cv2
 import argparse
 import numpy as np
+import os
+import time
 # from PIL import Image, ImageEnhance
 
 # Converts components instead of the RGB representation to HLS
@@ -128,22 +130,25 @@ def load_images(path):
 
 ######################## GENERATE RAIN IMAGES #########################################
 def generate_rain(args):
-    # path = input("Enter The Path - ")
-    path = './images/*.png'
-    images = load_images(path)
-    print('Images Loaded')
+    # path = './images/*.png'
+    images = load_images(args.input + "/*.png")
 
     rainy_images = add_rain(images, args.slant, args.rain_intensity, args.brightness_level)
+    # print("Rain Images generated")
 
     save_images(rainy_images)
 
 ######################## SAVE IMAGES #########################################
 def save_images(images):
+    new_dir_name = f"rain{args.rain_intensity}"
+    current_dir = os.getcwd()
+    new_dir = os.path.join(current_dir, new_dir_name)
+    os.mkdir(new_dir)
     i=0
     for img in images:
-        plt.imsave(f"{args.save}/img{i}.png", img)
+        # plt.imsave(f"{new_dir}/img{i}.png", img)
+        cv2.imwrite(f"{new_dir}/img{i}.png", img)
         i += 1
-    print("Images Saved")
 
 ######################## ERROR CHECKING #########################################
 def is_numpy_array(x):
@@ -193,10 +198,12 @@ if __name__ == '__main__':
         default=0.0,
         type=float,
         help='Enter Brightness Level')
-    parser.add_argument(
-        '--save',
-        default='./',
-        help='Enter The Path Where To Save')
+    # parser.add_argument(
+    #     '--save',
+    #     default='./',
+    #     help='Enter The Path Where To Save')
     args = parser.parse_args()
-
+    st = time.time()
     generate_rain(args)
+    et = time.time()
+    print(f"ELAPSED TIME - {et-st}")
