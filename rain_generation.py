@@ -176,9 +176,9 @@ err_rain_length = "Length value between 0 and 100 is allowed"
 ######################## MAIN #########################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Add OOD Rain to Images')
-    # parser.add_argument(
-    #     '--input',
-    #     help='Input Folder Of Files')
+    parser.add_argument(
+        '--input',
+        help='Input Folder Of Files')
     parser.add_argument(
         '--rain_intensity',
         default='10mm',
