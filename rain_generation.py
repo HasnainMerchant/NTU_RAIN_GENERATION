@@ -4,35 +4,7 @@ import cv2 as cv2
 import argparse
 import numpy as np
 import os
-import time
-# from PIL import Image, ImageEnhance
-
-# Converts components instead of the RGB representation to HLS
-# The HSV model describes colors similarly to how the human eye tends to perceive color.
-######################## HLS (Hue, Lightness, Saturation) #########################################
-def hls(image,src='RGB'):
-    verify_image(image)
-    if(is_list(image)):
-        image_HLS = []
-        image_list = image
-        for img in image_list:
-            eval('image_HLS.append(cv2.cvtColor(img,cv2.COLOR_' + src.upper() + '2HLS))')
-    else:
-        image_HLS = eval('cv2.cvtColor(image,cv2.COLOR_' + src.upper() + '2HLS)')
-    return image_HLS
-
-# Allows us to assign channels in the data to R, G and B (Red, Green, Blue) 
-######################## RGB #########################################
-def rgb(image, src='BGR'):
-    verify_image(image)
-    if(is_list(image)):
-        image_RGB = []
-        image_list = image
-        for img in image_list:
-            eval('image_RGB.append(cv2.cvtColor(img,cv2.COLOR_' + src.upper() + '2RGB))')
-    else:
-        image_RGB = eval('cv2.cvtColor(image,cv2.COLOR_' + src.upper() + '2RGB)')
-    return image_RGB
+import shutil
 
 ######################## GENERATE RANDOM LINES #########################################
 def generate_random_lines(imshape, slant, drop_length, rain_intensity):
@@ -78,12 +50,9 @@ def rain_process(image, slant, drop_length, drop_color, drop_width, rain_drops, 
     for rain_drop in rain_drops:
         cv2.line(image_t, (rain_drop[0], rain_drop[1]), (rain_drop[0] + slant,rain_drop[1] + drop_length), drop_color, drop_width)
     image = cv2.blur(image_t, (4, 4)) ## rainy view are blurry
-    # image_2 = Image
-    # enhancer = ImageEnhance.Brightness(image)
-    # image_output = enhancer.enhance(brightness)
-    image_HLS = hls(image) ## Conversion to HLS
-    image_RGB = rgb(image_HLS, 'hls') ## Conversion to RGB
-    return image_RGB
+    img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    img[:, :, 2] = cv2.multiply(img[:, :, 2], (1 + brightness))
+    return cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
 
 ######################## ADD OOD RAIN TO IMAGES #########################################
 def add_rain(image, slant=-1, rain_intensity='None', brightness=0, drop_length=20, drop_width=1, drop_color=(200,200,200)): ## (200,200,200) a shade of gray
@@ -130,24 +99,23 @@ def load_images(path):
 
 ######################## GENERATE RAIN IMAGES #########################################
 def generate_rain(args):
-    # path = './images/*.png'
     images = load_images(args.input + "/*.png")
 
-    rainy_images = add_rain(images, args.slant, args.rain_intensity, args.brightness_level)
-    # print("Rain Images generated")
+    rainy_images = add_rain(images, args.slant, args.rain_intensity, args.brightness)
 
     save_images(rainy_images)
 
 ######################## SAVE IMAGES #########################################
 def save_images(images):
-    new_dir_name = f"rain{args.rain_intensity}"
+    new_dir_name = f"rain{args.rain_intensity}+b({str(args.brightness)})"
     current_dir = os.getcwd()
     new_dir = os.path.join(current_dir, new_dir_name)
+    if os.path.exists(new_dir):
+        shutil.rmtree(new_dir)
     os.mkdir(new_dir)
-    i=0
+    i=00000
     for img in images:
-        # plt.imsave(f"{new_dir}/img{i}.png", img)
-        cv2.imwrite(f"{new_dir}/img{i}.png", img)
+        plt.imsave(f"{new_dir}/{i}.png", img)
         i += 1
 
 ######################## ERROR CHECKING #########################################
@@ -194,16 +162,9 @@ if __name__ == '__main__':
         type=int,
         help='Enter Slant For Droplets Of Rains')
     parser.add_argument(
-        '--brightness_level',
+        '--brightness',
         default=0.0,
         type=float,
-        help='Enter Brightness Level')
-    # parser.add_argument(
-    #     '--save',
-    #     default='./',
-    #     help='Enter The Path Where To Save')
+        help='Enter Brightness Level - Minus for Dark, Positive fro Bright')
     args = parser.parse_args()
-    st = time.time()
     generate_rain(args)
-    et = time.time()
-    print(f"ELAPSED TIME - {et-st}")
