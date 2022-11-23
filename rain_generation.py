@@ -13,26 +13,35 @@ def generate_random_lines(imshape, slant, drop_length, rain_intensity):
     no_of_drops = area//600
 
     if rain_intensity.lower() == '10mm':
-        no_of_drops = area//700
+        no_of_drops = area//500
         drop_length = 12
     elif rain_intensity.lower() == '20mm':
-        no_of_drops = area//600
-        drop_length = 15
+        no_of_drops = area//750
+        drop_length = 22
     elif rain_intensity.lower() == '30mm':
         no_of_drops = area//700
-        drop_length = 20
+        drop_length = 32
     elif rain_intensity.lower() == '40mm':
         no_of_drops = area//800
-        drop_length = 25
+        drop_length = 42
     elif rain_intensity.lower() == '50mm':
         no_of_drops = area//600
-        drop_length = 30
+        drop_length = 52
+    elif rain_intensity.lower() == '60mm':
+        no_of_drops = area//600
+        drop_length = 62
+    elif rain_intensity.lower() == '70mm':
+        no_of_drops = area//600
+        drop_length = 72
+    elif rain_intensity.lower() == '80mm':
+        no_of_drops = area//600
+        drop_length = 82
+    elif rain_intensity.lower() == '90mm':
+        no_of_drops = area//770
+        drop_length = 92
     elif rain_intensity.lower() == '100mm':
         no_of_drops = area//770
-        drop_length = 40
-    elif rain_intensity.lower() == '200mm':
-        no_of_drops = area//770
-        drop_length = 50
+        drop_length = 100
 
     for i in range(no_of_drops):
         if slant < 0:
