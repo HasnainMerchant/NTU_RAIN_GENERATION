@@ -11,4 +11,4 @@ REQUIREMENTS -
 Python and OpenCV code to Generate OOD Rain Images
 
 TO RUN THE SCRIPT - 
-python3 rain_generation.py --input 'folder_name' --rain_intensity '' --slant (optional) --brightness_level (not_working)
+python3 rain_generation.py --input 'folder_name' --rain_intensity '' --slant (optional) --brightness_level (optional)
